@@ -1,4 +1,4 @@
-## centos7安装mysql
+## centos7安装mysql5
 
 **获取mysql**
 
@@ -54,7 +54,7 @@ mysql> set global validate_password_length=1;
 再次执行修改密码
 
 ```mysql
-mysql> ALTER USER ‘root’@‘localhost’ IDENTIFIED BY ‘new password’;
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
 ```
 
 **查询端口**
@@ -242,5 +242,79 @@ rm -rf /etc/my.cnf
 
 ```
 rpm -qa|grep -i mysql
+```
+
+## centos7安装mysql8.0
+
+```
+rpm -qa | grep -i mysql
+yum -y remove MySQL-*
+用rpm -e 或者rpm -ev的命令删除mysql
+```
+
+```
+find / -name mysql
+使用rm -rf 路径
+```
+
+```
+删除配置文件
+rm -rf /etc/my.cnf
+删除MySQL默认密码
+rm -rf /root/.mysql_sercret
+```
+
+```
+配置MySQL8.0安装源
+sudo rpm -Uvh https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+安装MySQL8.0
+sudo yum --enablerepo=mysql80-community install mysql-community-server
+```
+
+```
+启动MySQL服务
+systemctl start mysqld
+查看MySQL服务运行状态
+Systemctl status mysqld
+设置开机启动
+systemctl enable mysqld 
+关闭开机启动
+systemctl disable mysqld 
+```
+
+```
+查看root临时密码
+grep "A temporary password" /var/log/mysqld.log
+```
+
+```
+输入：mysql -uroot -p
+ 在Enter password：后面输入临时密码
+ 登录成功
+ 输入：ALTER USER ‘root’@‘localhost’ IDENTIFIED BY ‘new password’;
+ 会提示：ERROR 1819 (HY000): Your password does not satisfy the current policy requirements(密码不符合当前策略)
+ 方案1: 设置符合策略的密码(大小写字母+数据+符号)
+ 方案2:密码策略改简单一点
+```
+
+```
+策略说明
+ validate_password.length 是密码的最小长度，默认是8，我们把它改成6
+ 输入：set global validate_password.length=6;
+ validate_password.policy 验证密码的复杂程度，我们把它改成0
+ 输入：set global validate_password.policy=0;
+ validate_password.check_user_name 用户名检查，用户名和密码不能相同，我们也把它关掉
+ 输入：set global validate_password.check_user_name=off;
+```
+
+```
+执行修改密码的命令
+alter user user() identified by ‘123456';
+```
+
+```
+配置远程访问
+CREATE USER 'root'@'%' IDENTIFIED BY 'KC$abc123';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
 ```
 
